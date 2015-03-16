@@ -41,8 +41,13 @@ ModalPiano : ModalInstrument{
 		// downbeat
 
 		//for the first session
-		outPattern=outPattern.add([this.getCharNoteBlockChord, 5/3]);
-		outPattern=outPattern.add([this.getRootBlockChord, 19/3]);
+		if ((5.rand==1), {
+			outPattern=outPattern.add([this.getCharNoteChord, 2.5/3]);
+			outPattern=outPattern.add([this.getCharNoteChord, 2.5/3]);
+		},{
+			outPattern=outPattern.add([this.getCharNoteChord, 5/3]);
+		});
+		outPattern=outPattern.add([this.getRootChord, 19/3]);
 		/*remainder = 1;
 		if (this.newChord || (4.rand == 0), {
 			currentDur = 5/3;
@@ -80,7 +85,7 @@ ModalPiano : ModalInstrument{
 		^outPattern;
 	}
 
-	getCharNoteBlockChord {
+/*	getCharNoteBlockChord {
 		var bottomNote, outArr = [], converted = [], root = this.octaveSize;
 		bottomNote = (4.rand * -2) + this.charNote + 12;
 		outArr = Array.fill(4, {|i| bottomNote + (2*i)});
@@ -95,11 +100,25 @@ ModalPiano : ModalInstrument{
 		2.rand.do {|i| converted[i] = converted[i] + 12;};
 		^converted;
 
+	}*/
+
+	getCharNoteChord {
+		var outArr = this.charChords.choose, converted;
+		outArr.do { |val| converted = converted.add(ModalInstrument.getRealPitch(val, this.scale, this.root+12))};
+		converted.postln;
+
+		^converted;
+	}
+	getRootChord {
+		var outArr = [-3,6,0,9], converted;
+		//add inversions later
+		outArr.do { |val| converted = converted.add(ModalInstrument.getRealPitch(val, this.scale, this.root+12))};
+		^converted;
 	}
 
 	play {
-		var pb;
-		pb = Pbind (
+
+		this.pb = Pbind (
 			\type, \midi,
 			\midiout, this.midiout,
 			[\temp, \dur], Pn(Plazy{Pseq(this.makePhrase)}),
@@ -107,7 +126,7 @@ ModalPiano : ModalInstrument{
 			\chan, 2,
 			\amp, 0.3
 		).play(this.tempoclock);
-		^pb;
+
 	}
 
 }

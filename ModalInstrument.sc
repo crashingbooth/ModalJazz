@@ -1,6 +1,6 @@
 ModalInstrument {
 	var <>scale, <>octaveSize, >charNote, <>root, <>midiout, <>tempoclock, <>channel, <>onDeck, <>pb;
-	classvar <>charNoteDict;
+	classvar <>charNoteDict,<>charChordDict;
 	*new { |scale, root, midiout, tempoclock|
 
 		^super.new.init(scale, root, midiout, tempoclock) }
@@ -14,7 +14,14 @@ ModalInstrument {
 				"Scale.aeolian", 5,
 				"Scale.melodicMinorDesc",5,
 				"Scale.locrian", [1,4]]);
-
+		ModalInstrument.charChordDict = Dictionary.newFrom(
+			List["Scale.ionian", [[0,9,3,12],[2,11,5,14]],
+				"Scale.dorian", [[-2,7,1,10],[0,9,3,12]],
+				"Scale.phrygian", [[-2,7,1,10],[-4,5,-1,8]],
+				"Scale.lydian", [[-2,7,1,10],[-4,5,-1,8]],
+				"Scale.mixolydian", [[1,10,4,13],[-4,5,-1,8]],
+				"Scale.aeolian", [[-1,8,2,11],[0,9,3,12]],
+				"Scale.locrian", [[-1,8,2,11],[1,10,4,13]]]);
 	}
 	init { |midiout, tempoclock|
 		/*this.scale = scale;
@@ -41,6 +48,10 @@ ModalInstrument {
 		var note = ModalInstrument.charNoteDict[this.scale.asString];
 		if (note.size > 1, {note = note.choose});
 		^note;
+	}
+	charChords {
+		var chord = ModalInstrument.charChordDict[this.scale.asString];
+		^chord;
 	}
 
 	reset {
