@@ -2,15 +2,14 @@ ModalBass : ModalInstrument {
 	var <>prev, <>prev2, <>degree, <>octaveSize, <>phraseLength, <>dur, <>skipLastBeat, <>midiout, <>tempoclock,<>legato, <>offset, <>asc, <>usedChromaticArr, <>verbose, <>channel, <>changeToScore, <>behaviour, <>beatCounter, <>scoreBag;
 
 	*new {|scale, root, phraseLength, midiout, tempoclock|
-		^super.new.mb_init(scale, root, phraseLength, midiout, tempoclock) }
+		^super.new(midiout, tempoclock).mb_init(scale, root, phraseLength) }
 
-	mb_init { |scale, root, phraseLength = 8, midiout, tempoclock|
-		super.init( midiout, tempoclock);
+	mb_init { |scale, root, phraseLength = 8|
 		// this.degree = 0;
 		this.setScale(scale, root);
 		this.offset = 36;
 		if (tempoclock == nil,
-			{ this.tempoclock = TempoClock.new(132/60)}, { this.tempoclock = tempoclock });
+			{ this.tempoclock = TempoClock.new(132/60)});
 		this.legato = 0.75; // \sustain = \dur * \legato
 		this.phraseLength = phraseLength;
 		this.onDeck = [this.scale, this.root];
