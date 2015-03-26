@@ -1,5 +1,5 @@
 Conductor {
-	var <>tempoclock, <>bass, <>drums, <>midiout, <>bassPbind, <>piano, <>pianoPbind, <>continueRoutine, <>onDeck, <>instDict, <>isPlaying;
+	var <>tempoclock, <>bass, <>drums, <>midiout, <>bassPbind, <>piano, <>pianoPbind, <>continueRoutine, <>onDeck, <>instDict, <>isPlaying, <>currentScale, <>currentRoot;
 	*new { |tempo, midiout|
 
 	^super.new.init(tempo, midiout) }
@@ -7,9 +7,11 @@ Conductor {
 		this.midiout = midiout;
 		if (tempo == nil,
 		{ this.tempoclock = TempoClock.new(132/60) }, {this.tempoclock = TempoClock.new(tempo) } );
-		this.bass = ModalBass(Scale.dorian,root:2,phraseLength:8, midiout:this.midiout, tempoclock: this.tempoclock);
+		this.currentScale = Scale.dorian;
+		this.currentRoot = 2;
+		this.bass = ModalBass(this.currentScale,root:this.currentRoot,phraseLength:8, midiout:this.midiout, tempoclock: this.tempoclock);
 		this.drums = DrumPlayer(midiout: this.midiout, tempoclock: this.tempoclock);
-		this.piano = ModalPiano(Scale.dorian,root:2, midiout:this.midiout, tempoclock: this.tempoclock);
+		this.piano = ModalPiano(this.currentScale,root:this.currentRoot, midiout:this.midiout, tempoclock: this.tempoclock);
 		this.isPlaying = false;
 		this.instDict = Dictionary.newFrom(
 			List[\bass, this.bass,
