@@ -1,12 +1,9 @@
 ModalPiano : ModalInstrument{
 	var <>tempoclock, <>scale, <>root, <>midiout, <>offset, <>legato, <>behaviour, <>changeToScore, <>newChord;
-	// classvar <>static;
 	*new { |scale, root, midiout, tempoclock|
+		^super.new(midiout, tempoclock).p_init(scale, root) }
 
-		^super.new.p_init(scale, root, midiout, tempoclock) }
-
-	p_init { |scale, root, midiout, tempoclock |
-		super.init(midiout, tempoclock);
+	p_init { |scale, root|
 		this.setScale(scale, root);
 		this.offset = 0;
 		this.legato = 0.8;
