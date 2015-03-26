@@ -29,6 +29,7 @@ ModalInstrument {
 		// this.setScale(scale, root);
 		this.midiout = midiout;
 		this.tempoclock = tempoclock;
+		["CREATED", this.class].postln;
 
 	}
 	setScale { |scale, root = nil|
