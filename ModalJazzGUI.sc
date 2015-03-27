@@ -1,8 +1,10 @@
 ModalJazzGUI {
 	var <>cond, <>master, <>startButton,
 	<>progression, <>alt_progression,// for executeChart
-	<>playControlsView, <>modeSelectView,<>metaManualSelectView, <>manualSelectView, <>setModeButtonHolderView,
+	<>localMode, <>localRoot,
+	<>playControlsView, <>modeSelectView,<>metaManualSelectView, <>manualSelectView, <>setModeButtonHolderView,<>drumView, <>modalInstrumentView,
 	<>exChartButton,
+	<>h, <>w, <>m,
 	<>d_DorButton, <>d_LydButton, <>setModeButton, <>modeButtons, <>rootButtons,
 	<>playingProg; // part of global display;
 	classvar <>alreadyExists, <>modes, <>modeNames, <>roots;
@@ -21,12 +23,16 @@ ModalJazzGUI {
 		this.progression =  [[Scale.dorian, 2, 4],[Scale.lydian, 2, 4],[Scale.phrygian, 4, 4],[Scale.dorian, 3, 4]];
 		this.alt_progression = [[Scale.dorian, 2, 4],[Scale.lydian, 2, 4],[Scale.phrygian, 4, 4],[Scale.dorian, 3, 4]];
 		this.playingProg = false;
+		this.localMode = Scale.dorian;
+		this.localRoot = 2;
 		this.buildGUI();
 	}
 
 	buildGUI {
-		var w = 60, h = 30, m = 5, sec = (h + (2 * m)),  // width, height, margin, section
-		playingProg, localMode, localRoot;
+		var sec, h, w, m,  // width, height, margin, section
+		playingProg;
+		this.h = 30; this.m = 5; this.w = 60;
+		h = this.h; w = this.w; m = this.m; sec = (h + (2 * m));
 		this.master = Window("ModalJazz", Rect(1300,0, 1020, 750)).front
 		.alwaysOnTop_(true);
 		this.master.view.decorator_(FlowLayout(this.master.bounds, m@m, m@m));
@@ -67,33 +73,70 @@ ModalJazzGUI {
 		"GUI: D lydian set".postln
 		});
 
-		// manual select (can be hidden)
+		// manual select
 		this.metaManualSelectView = CompositeView(this.modeSelectView, 720@(h+h+m+2));
 		this.metaManualSelectView.decorator_(FlowLayout(this.metaManualSelectView.bounds, 0@0, 0@0));
 		this.metaManualSelectView.background_(Color.rand);
-		this.setModeButton = Button(this.metaManualSelectView, 0@0, w@(h+h+m))
+		this.setModeButton = Button(this.metaManualSelectView, 0@0, w@(h+h+h+m))
 		.states_([["set"]])
-		.action_({ this.cond.prepareNextMode(localMode, localRoot)});
+		.action_({ this.applySetButton(this.localMode, this.localRoot)});
 		this.manualSelectView = CompositeView(this.metaManualSelectView, 650@(h+h+m+1));
-		this.manualSelectView.decorator_(FlowLayout(this.manualSelectView.bounds, 0@0, m@m));
+		this.manualSelectView.decorator_(FlowLayout(this.manualSelectView.bounds, 0@0, (m+10)@m));
 		this.manualSelectView.background_(Color.green);
-
-		this.modeButtons = Array.fill (7,
-			{ |i| Button(this.manualSelectView, (w*1.3)@h)
-				.states_([[ModalJazzGUI.modeNames[i]]])
-				.action_({localMode = ModalJazzGUI.modes[i];
-					ModalJazzGUI.modeName[i].postln});
-			});
+		this.setModeButtons();
 		this.manualSelectView.decorator.nextLine;
-		this.rootButtons = Array.fill (12,
-			{ |i| Button(this.manualSelectView, ((h*1.4))@h)
-				.states_([[ModalJazzGUI.roots[i]]])
-				.action_({localRoot = (i-6);
+		this.setRootButtons();
+
+		//
+		this.master.view.decorator.nextLine;
+		this.modalInstrumentView = CompositeView(this.master,400@550);
+		this.modalInstrumentView.background_(Color.rand);
+		this.drumView = CompositeView(this.master, 600@550);
+		this.drumView.background_(Color.rand);
+
+
+	}
+	// mode select helper methods
+	setModeButtons{
+		this.modeButtons = Array.fill (7,
+			{ |i| Button(this.manualSelectView, (this.w*1.3)@this.h)
+				.states_([[ModalJazzGUI.modeNames[i], Color.black,  Color.gray(0.9)]])
+				.action_({this.localMode = ModalJazzGUI.modes[i];
+					this.resetModeButtons(i);
+					ModalJazzGUI.modeNames[i].postln});
+			});
+	}
+	resetModeButtons{ |select|
+		this.modeButtons.do {|self| self.setBackgroundColor(0, Color.gray(0.9))};
+		if (select != nil, {this.modeButtons[select].setBackgroundColor(0, Color.yellow)}) ;
+	}
+	setRootButtons {
+	this.rootButtons = Array.fill (12,
+			{ |i| Button(this.manualSelectView, ((h*1.3))@h)
+				.states_([[ModalJazzGUI.roots[i], Color.black,  Color.gray(0.9)]])
+				.action_({this.localRoot = (i-6);
+					this.resetRootButtons(i);
 					ModalJazzGUI.roots[i].postln});
 			});
+	}
+	resetRootButtons{ |select|
+		this.rootButtons.do {|self| self.setBackgroundColor(0, Color.gray(0.9))};
+		select.postln;
+		if (select != nil, {this.rootButtons[select].setBackgroundColor(0, Color.yellow)}) ;
+	}
+	applySetButton {
+		this.cond.prepareNextMode(this.localMode, this.localRoot);
+		this.resetModeButtons();
+		this.resetRootButtons();
+		this.modeButtons[ModalJazzGUI.modes.indexOf(this.localMode)].setBackgroundColor(0, Color.blue(0.8));
+		this.rootButtons[this.localRoot + 6].setBackgroundColor(0, Color.blue(0.8));
 
 
 	}
 
 
 }
+/*
+TODO:
+use 3 colours for manual select: blue (machine selected), purple (called by set), yellow (human temp)
+*/
