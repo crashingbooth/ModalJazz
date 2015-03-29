@@ -8,5 +8,8 @@ ConductorForGui : Conductor {
 
 	}
 
+	updateGui {
+	}
+
 
 }
