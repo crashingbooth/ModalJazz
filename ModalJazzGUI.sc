@@ -6,6 +6,9 @@ ModalJazzGUI {
 	<>exChartButton,
 	<>h, <>w, <>m,
 	<>d_DorButton, <>d_LydButton, <>setModeButton, <>modeButtons, <>rootButtons,
+	<>drum_regularButton, <>drum_playSingleButton, <>drum_last2Button,
+	<>drum_revertButton, <>drum_evolveButton, <>fill1Buttons, <>fill2Buttons, <>fill3Buttons,
+	<>drumModeView,
 	<>playingProg; // part of global display;
 	classvar <>alreadyExists, <>modes, <>modeNames, <>roots;
 	*new { |conductor|
@@ -31,7 +34,7 @@ ModalJazzGUI {
 	buildGUI {
 		var sec, h, w, m,  // width, height, margin, section
 		playingProg;
-		this.h = 30; this.m = 5; this.w = 60;
+		this.h = 40; this.m = 6; this.w = 60;
 		h = this.h; w = this.w; m = this.m; sec = (h + (2 * m));
 		this.master = Window("ModalJazz", Rect(1300,0, 1020, 750)).front
 		.alwaysOnTop_(true);
@@ -93,6 +96,7 @@ ModalJazzGUI {
 		this.modalInstrumentView.background_(Color.rand);
 		this.drumView = CompositeView(this.master, 600@550);
 		this.drumView.background_(Color.rand);
+		this.makeDrumViewSection();
 
 
 	}
@@ -131,8 +135,57 @@ ModalJazzGUI {
 		this.modeButtons[ModalJazzGUI.modes.indexOf(this.localMode)].setBackgroundColor(0, Color.blue(0.8));
 		this.rootButtons[this.localRoot + 6].setBackgroundColor(0, Color.blue(0.8));
 
-
 	}
+	//DRUMVIEW SECTION  (600@550)
+	makeDrumViewSection {
+		var w = 100, changeView, fill1View, fill2View, fill3View;
+		var fill1List, fill2List, fill3List;
+		this.drumView.decorator_(FlowLayout(this.drumView.bounds, this.m@this.m,this.m@this.m));
+
+		this.drumModeView = HLayoutView(this.drumView, Rect(5,5,310,this.h));
+		this.drumModeView.background(Color.red);
+		this.drum_regularButton = Button(this.drumModeView,w*1 )
+		.states_([["regular"]])
+		.action_({this.cond.drum_behaviour(\playRegularPolymetric)});
+		this.drum_playSingleButton = Button(this.drumModeView,w*1)
+		.states_([["single repeat"]])
+		.action_({this.cond.drum_behaviour(\playSingle)});
+		this.drum_last2Button = Button(this.drumModeView,w )
+		.states_([["2 bar repeat"]])
+		.action_({this.cond.drum_behaviour(\playLastTwo)});
+		changeView = HLayoutView(this.drumView, Rect(0,0,250,this.h));
+		this.drum_revertButton = Button(changeView,w )
+		.states_([["revert"]])
+		.action_({this.cond.drum_restoreLastPattern});
+
+		this.drum_evolveButton = Button(changeView,w )
+		.states_([["evolve"]])
+		.action_({this.cond.drum_evolve});
+		fill1View = VLayoutView(this.drumView, Rect(5,5,180, 400));
+		this.fill1Buttons = [];
+		fill1List = [[1,12], [2,6], [3,4],[4,3]];
+		fill2List = [[1,8], [2,4], [2,8], [4,4]];
+		4.do{ |i| this.fill1Buttons = this.fill1Buttons.add(Button(fill1View, this.h*1.4)
+			.states_([[fill1List[i][0].asString ++ " x " ++ fill1List[i][1].asString ++ " basic"]])
+			.action_({this.cond.drum_basicFill(fill1List[i][0], fill1List[i][1])})
+		)};
+		fill2View = VLayoutView(this.drumView, Rect(5,5,180, 400));
+		this.fill2Buttons = [];
+		4.do{ |i| this.fill2Buttons = this.fill2Buttons.add(Button(fill2View, this.h*1.4)
+			.states_([[fill2List[i][0].asString ++ " x " ++ fill2List[i][1].asString ++ " basic"]])
+			.action_({this.cond.drum_basicFill(fill2List[i][0], fill2List[i][1])})
+		) };
+		fill3View = VLayoutView(this.drumView, Rect(5,5,180, 400));
+		this.fill3Buttons = [];
+		4.do{ |i| this.fill3Buttons = this.fill3Buttons.add(Button(fill3View, this.h*1.4)
+		) };
+
+
+
+
+
+		}
+
 
 
 }

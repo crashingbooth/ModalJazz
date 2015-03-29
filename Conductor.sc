@@ -185,6 +185,30 @@ Conductor {
 		^Routine({chart.do {|oneBar| oneBar.yield}});
 	}
 
+	// methods for controlling drums and fills
+	drum_behaviour { |behaviour|
+		// \playSingle, \playLastTwo, \playRegularPolymetric
+		this.drums.playMode = behaviour
+	}
+
+	drum_restoreLastPattern {
+		this.drums.restoreLastPattern()
+	}
+
+	drum_evolve {
+		this.drums.evolveLastFill();
+	}
+
+	drum_basicFill { |unitLength, numReps, minDens = 0, maxDens = 0.5|
+		this.drums.setCurrentPattern(this.drums.generatePattern(unitLength,numReps,minKickDensity: minDens, maxKickDensity: maxDens));
+	}
+
+	drum_polymetricFill { |numBars, unit|
+		this.drums.polymetricFill(numBars,unit);
+		//e.g. this.drums.polymetricFill(1,3) -> one bar of triplets
+	}
+
+
 	*generateOstinato  {
 		var downBeat = ["firstHalf", "secondHalf"].choose,
 		positions = [[0,2].choose, [4,6].choose],
