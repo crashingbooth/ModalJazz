@@ -1,5 +1,5 @@
 Conductor {
-	var <>tempoclock, <>bass, <>drums, <>midiout, <>bassPbind, <>piano, <>pianoPbind, <>continueRoutine, <>onDeck, <>instDict, <>isPlaying, <>currentScale, <>currentRoot;
+	var <>tempoclock, <>bass, <>drums, <>midiout, <>bassPbind, <>piano, <>pianoPbind, <>continueRoutine, <>playingProgression, <>onDeck, <>instDict, <>isPlaying, <>currentScale, <>currentRoot;
 	*new { |tempo, midiout|
 
 	^super.new.init(tempo, midiout) }
@@ -9,6 +9,7 @@ Conductor {
 		{ this.tempoclock = TempoClock.new(132/60) }, {this.tempoclock = TempoClock.new(tempo) } );
 		this.currentScale = Scale.dorian;
 		this.currentRoot = 2;
+		this.playingProgression = false;
 		this.bass = ModalBass(this.currentScale,root:this.currentRoot,phraseLength:8, midiout:this.midiout, tempoclock: this.tempoclock);
 		this.drums = DrumPlayer(midiout: this.midiout, tempoclock: this.tempoclock);
 		this.piano = ModalPiano(this.currentScale,root:this.currentRoot, midiout:this.midiout, tempoclock: this.tempoclock);
@@ -123,12 +124,13 @@ Conductor {
 		this.continueRoutine = true; // this value is changed by calling this.manualModeSelect
 
 		this.tempoclock.sched(0,{ var nextOnDeck = onDeckSched.next, nextMain = mainSched.next;
+				this.playingProgression = true;
 			if ((nextOnDeck == nil),
 				{ if (this.continueRoutine,
 					{
 					onDeckSched.reset; nextOnDeck = onDeckSched.next;
 					mainSched.reset; nextMain = mainSched.next;},
-					{ this.drums.barCount = 2; "ENDED".postln; this.setScale(this.onDeck[0], this.onDeck[1]); this.prepareNextMode(onDeck[0], onDeck[1]);nil}
+					{ this.drums.barCount = 2; "ENDED".postln; this.playingProgression = false; this.setScale(this.onDeck[0], this.onDeck[1]); this.prepareNextMode(onDeck[0], onDeck[1]);nil}
 			)});
 			if ((nextOnDeck != nil),{  [counter, "CONTINUED", nextMain, nextOnDeck, this.tempoclock.beats].postln; counter = counter +1;
 				this.handleChartRoutine( nextOnDeck, nextMain); 8 /*repeat in 8*/});

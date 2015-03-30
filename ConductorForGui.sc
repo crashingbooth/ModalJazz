@@ -20,6 +20,17 @@ ConductorForGui : Conductor {
 
 		this.myGui.resetModeButtons(this.currentScale, this.myGui.externalColor);
 		this.myGui.resetRootButtons(this.currentRoot, this.myGui.externalColor);
+
+		if (this.playingProgression,
+					{
+						this.myGui.exChartButton.setBackgroundColor(0,this.myGui.externalColor)
+					},
+					{
+
+						this.myGui.exChartButton.setBackgroundColor(0, Color.gray(0.9))
+					}
+				);
+
 		}.defer
 		})
 	}
@@ -38,11 +49,11 @@ ConductorForGui : Conductor {
 }
 /*
 UPDATES:
-currentMode
-currentRoot
+>currentMode
+>currentRoot
 nextRoot
 nextMode
-isPlayingProgression
+>isPlayingProgression
 
 currentDrumPattern
 lastDrumPattern
