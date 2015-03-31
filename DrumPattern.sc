@@ -298,15 +298,14 @@ DrumPlayer {
 	generatePattern { |phraseLength = 6, reps = 2, minDensity = 0, maxDensity = 1|
 		// ride will play quarters, make phrase of length phraseLength and repeat reps times
 		// reps will be mutated (either from most recent rep or 1st rep)
-		var initialArray = [], repsArr = [], accent1 = phraseLength.rand, accent2 = phraseLength.rand, outList, density, kicks,minDensityFlag = false, maxDensityFlag = false;
+		var initialArray = [], repsArr = [], accent1 = phraseLength.rand, accent2 = phraseLength.rand, outList, density, totalPower, densityFlag = false;
 		var count = 0, outName = "";
 		outName = "customFill " ++ phraseLength ++ " x " ++ reps;
-		while ({(minDensityFlag == false) || (maxDensityFlag == false)},
+		while ({densityFlag == false},
 
 			{   // generate initial pattern w/ accents
 				initialArray = [];
-				minDensityFlag = false;
-				maxDensityFlag = false;
+
 				phraseLength.do { |i|
 					var acc = \n;
 					if ( (i == accent1) || (i == accent2), { acc = \s } );
@@ -314,18 +313,10 @@ DrumPlayer {
 
 				repsArr = this.createVariations(phraseLength, reps, initialArray);
 
-				// kick counter
-				kicks = 0;
-				repsArr.do { |initArr|
-					initArr.do {
-					|pair| if (pair[0] == "kick", {kicks = kicks +1;}) };
-				};
-				density = (kicks/(reps*phraseLength));
-
-				if (minDensity <= density, {minDensityFlag = true});
-				if (maxDensity >= density, {maxDensityFlag = true});
+				// density calculation
+				densityFlag = this.densityCalculation(repsArr, minDensity, maxDensity);
 				count = count +1;
-				if (count > 50, {minDensityFlag = true; maxDensityFlag = true; "couldn't meet kick ratio".postln});
+				if (count > 50, {densityFlag = true;"couldn't meet density requirements".postln});
 
 
 
@@ -337,6 +328,27 @@ DrumPlayer {
 		repsArr.do {  |phrase| outList = outList ++ phrase	};
 
 		^DrumPlayer.monoListToPattern(outList, name: outName, hitsPerBar:(phraseLength * reps));
+	}
+
+	densityCalculation { |repsArr, minDensity, maxDensity|
+		var totalPower, density;
+		totalPower = 0;
+		repsArr.do { |initArr|
+			initArr.do { |pair|
+				case
+				{ pair[0] == "kick" } { totalPower = totalPower + 1 }
+				{ pair[0] == "midtom" } { totalPower = totalPower + 0.7 }
+				{ pair[0] == "lowtom" } { totalPower = totalPower + 0.7 }
+				{ pair[0] == "hightom" } { totalPower = totalPower + 0.7 }
+				{ pair[0] == "snare" } { totalPower = totalPower + 0.3 }
+				{ pair[0] == "closedhh" } { totalPower = totalPower + 0.3 }
+
+			}
+		};
+		density = (totalPower/(repsArr.size*repsArr[0].size));
+		["densityCalc", density, minDensity, maxDensity].postln;
+
+		^((minDensity <= density) && (maxDensity >= density))
 	}
 
 	createVariations {|phraseLength, reps, source|
