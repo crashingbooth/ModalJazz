@@ -163,9 +163,9 @@ ModalJazzGUI {
 		var w = 100, changeView, fill1View, fill2View, fill3View;
 		var fill1List, fill2List, fill3List;
 		this.drumView.decorator_(FlowLayout(this.drumView.bounds, this.m@this.m,this.m@this.m));
-		this.drumCurrentPatternLabel = StaticText(this.drumView, 100@this.h);
+		this.drumCurrentPatternLabel = StaticText(this.drumView, 200@this.h);
 
-		this.drumLastPatternLabel = StaticText(this.drumView, 100@this.h);
+		this.drumLastPatternLabel = StaticText(this.drumView, 200@this.h);
 
 		this.drumView.decorator.nextLine;
 		this.drumModeView = HLayoutView(this.drumView, Rect(5,5,310,this.h));
@@ -215,7 +215,7 @@ ModalJazzGUI {
 		//<>drum_regularButton, <>drum_playSingleButton, <>drum_last2Button,
 		this.drum_regularButton.setBackgroundColor(0, Color.gray(0.9));
 		this.drum_playSingleButton.setBackgroundColor(0, Color.gray(0.9));
-		this.drum_playSingleButton.setBackgroundColor(0, Color.gray(0.9));
+		this.drum_last2Button.setBackgroundColor(0, Color.gray(0.9));
 	}
 
 

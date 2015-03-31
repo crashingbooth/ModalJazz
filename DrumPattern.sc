@@ -72,7 +72,7 @@ DrumPattern {
 }
 
 DrumPlayer {
-	var <>midiout, <>tempoclock, <>library, <>currentPattern, <>primaryPat, <>secondaryPat, <>barCount, <>playMode, <>varProb, <>rideLibrary, <>schedule, <>verbose, <>tempoclock, <>basicKSLibrary, <>lastPattern, <>pb, <>mostRecentFill;
+	var <>midiout, <>tempoclock, <>library, <>currentPattern, <>primaryPat, <>secondaryPat, <>barCount, <>playMode, <>varProb, <>rideLibrary, <>schedule, <>verbose, <>tempoclock, <>basicKSLibrary, <>lastPattern, <>pb, <>mostRecentFill, <>mostRecentFillName;
 	classvar <>midiNumIndex, <>choices;
 
 	*new{ |midiout, tempoclock|
@@ -333,6 +333,7 @@ DrumPlayer {
 		outList = [];
 		// flatten repsArr
 		this.mostRecentFill = repsArr;
+		this.mostRecentFillName = outName;
 		repsArr.do {  |phrase| outList = outList ++ phrase	};
 
 		^DrumPlayer.monoListToPattern(outList, name: outName, hitsPerBar:(phraseLength * reps));
@@ -359,7 +360,7 @@ DrumPlayer {
 	}
 	evolveLastFill {
 		// takes most recent output of generatePattern, evolves from 1st or last pattern
-		var source, reps, repsArr, phraseLength, outList;
+		var source, reps, repsArr, phraseLength, outList, name;
 
 		// in case there is no fill already, make one
 		if (this.mostRecentFill == nil, {this.setCurrentPattern(this.generatePattern(3,4,0,0.3)) } ,{
@@ -373,8 +374,9 @@ DrumPlayer {
 		// flatten repsArr
 		this.mostRecentFill = repsArr;
 		repsArr.do {  |phrase| outList = outList ++ phrase	};
+		this.mostRecentFillName = this.mostRecentFillName ++"e";
 
-			this.setCurrentPattern(DrumPlayer.monoListToPattern(outList, name: "evolved", hitsPerBar:(phraseLength * reps))); })
+		this.setCurrentPattern(DrumPlayer.monoListToPattern(outList, name: this.mostRecentFillName, hitsPerBar:(phraseLength * reps))); })
 
 	}
 
