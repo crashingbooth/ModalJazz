@@ -113,8 +113,9 @@ DrumPlayer {
 
 	}
 	setCurrentPattern{ |newPattern|
-		this.lastPattern = this.currentPattern.copy;
+		if (this.currentPattern == nil, {this.lastPattern = newPattern}, {this.lastPattern = this.currentPattern.copy});
 		this.currentPattern = newPattern;
+		["in deum parttern", this.currentPattern.name, this.lastPattern.name].postln;
 	}
 	reportState {
 		["playMode", this.playMode, "current", this.currentPattern.name, "last", this.lastPattern.name].postln;

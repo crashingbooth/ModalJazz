@@ -6,9 +6,10 @@ ModalJazzGUI {
 	<>exChartButton,
 	<>h, <>w, <>m,
 	<>d_DorButton, <>d_LydButton, <>setModeButton, <>modeButtons, <>rootButtons,
+	<>drumCurrentPatternLabel,
 	<>drum_regularButton, <>drum_playSingleButton, <>drum_last2Button,
 	<>drum_revertButton, <>drum_evolveButton, <>fill1Buttons, <>fill2Buttons, <>fill3Buttons,
-	<>drumModeView,
+	<>drumModeView, <>drumLastPatternLabel,
 	<>playingProg, // part of global display;
 	<>setColor, <>chosenColor, <>externalColor
 	;
@@ -162,25 +163,29 @@ ModalJazzGUI {
 		var w = 100, changeView, fill1View, fill2View, fill3View;
 		var fill1List, fill2List, fill3List;
 		this.drumView.decorator_(FlowLayout(this.drumView.bounds, this.m@this.m,this.m@this.m));
+		this.drumCurrentPatternLabel = StaticText(this.drumView, 100@this.h);
 
+		this.drumLastPatternLabel = StaticText(this.drumView, 100@this.h);
+
+		this.drumView.decorator.nextLine;
 		this.drumModeView = HLayoutView(this.drumView, Rect(5,5,310,this.h));
 		this.drumModeView.background(Color.red);
 		this.drum_regularButton = Button(this.drumModeView,w*1 )
-		.states_([["regular"]])
+		.states_([["regular", Color(), Color.gray(0.9)]])
 		.action_({this.cond.drum_behaviour(\playRegularPolymetric)});
 		this.drum_playSingleButton = Button(this.drumModeView,w*1)
-		.states_([["single repeat"]])
+		.states_([["single repeat", Color(), Color.gray(0.9)]])
 		.action_({this.cond.drum_behaviour(\playSingle)});
 		this.drum_last2Button = Button(this.drumModeView,w )
-		.states_([["2 bar repeat"]])
+		.states_([["2 bar repeat", Color(), Color.gray(0.9)]])
 		.action_({this.cond.drum_behaviour(\playLastTwo)});
 		changeView = HLayoutView(this.drumView, Rect(0,0,250,this.h));
 		this.drum_revertButton = Button(changeView,w )
-		.states_([["revert"]])
+		.states_([["revert", Color(), Color.gray(0.9)]])
 		.action_({this.cond.drum_restoreLastPattern});
 
 		this.drum_evolveButton = Button(changeView,w )
-		.states_([["evolve"]])
+		.states_([["evolve", Color(), Color.gray(0.9)]])
 		.action_({this.cond.drum_evolve});
 		fill1View = VLayoutView(this.drumView, Rect(5,5,180, 400));
 		this.fill1Buttons = [];
@@ -206,6 +211,12 @@ ModalJazzGUI {
 
 
 		}
+	drumModeButtonsReset {
+		//<>drum_regularButton, <>drum_playSingleButton, <>drum_last2Button,
+		this.drum_regularButton.setBackgroundColor(0, Color.gray(0.9));
+		this.drum_playSingleButton.setBackgroundColor(0, Color.gray(0.9));
+		this.drum_playSingleButton.setBackgroundColor(0, Color.gray(0.9));
+	}
 
 
 

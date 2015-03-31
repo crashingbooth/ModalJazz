@@ -122,9 +122,9 @@ Conductor {
 		oneBar.yield}});
 
 		this.continueRoutine = true; // this value is changed by calling this.manualModeSelect
-
+		this.playingProgression = true;
 		this.tempoclock.sched(0,{ var nextOnDeck = onDeckSched.next, nextMain = mainSched.next;
-				this.playingProgression = true;
+
 			if ((nextOnDeck == nil),
 				{ if (this.continueRoutine,
 					{
