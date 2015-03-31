@@ -9,6 +9,8 @@ ModalJazzGUI {
 	<>drumCurrentPatternLabel,
 	<>drum_regularButton, <>drum_playSingleButton, <>drum_last2Button,
 	<>drum_revertButton, <>drum_evolveButton, <>fill1Buttons, <>fill2Buttons, <>fill3Buttons,
+	<>drum_fillDensitySlider,
+	<>localMinDensity, <>localMaxDensity,
 	<>drumModeView, <>drumLastPatternLabel,
 	<>playingProg, // part of global display;
 	<>setColor, <>chosenColor, <>externalColor
@@ -187,7 +189,7 @@ ModalJazzGUI {
 		this.drum_evolveButton = Button(changeView,w )
 		.states_([["evolve", Color(), Color.gray(0.9)]])
 		.action_({this.cond.drum_evolve});
-		fill1View = VLayoutView(this.drumView, Rect(5,5,180, 400));
+		fill1View = VLayoutView(this.drumView, Rect(5,5,180, this.h*1.4*4));
 		this.fill1Buttons = [];
 		fill1List = [[1,12], [2,6], [3,4],[4,3]];
 		fill2List = [[1,8], [2,4], [2,8], [4,4]];
@@ -195,16 +197,24 @@ ModalJazzGUI {
 			.states_([[fill1List[i][0].asString ++ " x " ++ fill1List[i][1].asString ++ " basic"]])
 			.action_({this.cond.drum_basicFill(fill1List[i][0], fill1List[i][1])})
 		)};
-		fill2View = VLayoutView(this.drumView, Rect(5,5,180, 400));
+		fill2View = VLayoutView(this.drumView, Rect(5,5,180,this.h*1.4*4));
 		this.fill2Buttons = [];
 		4.do{ |i| this.fill2Buttons = this.fill2Buttons.add(Button(fill2View, this.h*1.4)
 			.states_([[fill2List[i][0].asString ++ " x " ++ fill2List[i][1].asString ++ " basic"]])
 			.action_({this.cond.drum_basicFill(fill2List[i][0], fill2List[i][1])})
 		) };
-		fill3View = VLayoutView(this.drumView, Rect(5,5,180, 400));
+		fill3View = VLayoutView(this.drumView, Rect(5,5,180, this.h*1.4*4));
 		this.fill3Buttons = [];
 		4.do{ |i| this.fill3Buttons = this.fill3Buttons.add(Button(fill3View, this.h*1.4)
 		) };
+		this.drumView.decorator.nextLine;
+		this.localMinDensity = 0;
+		this.localMaxDensity = 0.5;
+		this.drum_fillDensitySlider = RangeSlider(this.drumView, 550@this.h)
+		.lo_(this.localMinDensity)
+		.hi_(this.localMaxDensity)
+		.action_({|sl| this.localMinDensity = sl.lo; this.localMaxDensity = sl.hi; [this.localMinDensity,this.localMaxDensity].postln});
+
 
 
 

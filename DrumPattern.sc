@@ -370,9 +370,9 @@ DrumPlayer {
 
 
 	}
-	evolveLastFill {
+	evolveLastFill { |minDensity = 0, maxDensity = 0.5|
 		// takes most recent output of generatePattern, evolves from 1st or last pattern
-		var source, reps, repsArr, phraseLength, outList, name;
+		var source, reps, repsArr, phraseLength, outList, name, densityFlag = false, count = 0;
 
 		// in case there is no fill already, make one
 		if (this.mostRecentFill == nil, {this.setCurrentPattern(this.generatePattern(3,4,0,0.3)) } ,{
@@ -380,7 +380,16 @@ DrumPlayer {
 		source = [this.mostRecentFill[0], this.mostRecentFill[this.mostRecentFill.size-1]].choose;
 		reps = this.mostRecentFill.size;
 		phraseLength = source.size;
-		repsArr = this.createVariations(phraseLength, reps, source);
+			while ({densityFlag  == false },
+				{
+					repsArr = this.createVariations(phraseLength, reps, source);
+					densityFlag = this.densityCalculation(repsArr, minDensity, maxDensity);
+					count = count +1;
+				if (count > 50, {densityFlag = true;"couldn't meet density requirements".postln});
+
+
+			});
+
 
 		outList = [];
 		// flatten repsArr

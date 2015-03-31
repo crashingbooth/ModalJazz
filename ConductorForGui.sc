@@ -63,7 +63,19 @@ ConductorForGui : Conductor {
 		super.play;
 		this.tempoclock.sched(0, {this.updateGui; 4});
 	}
+	drum_evolve {
+		var minDens, maxDens;
+		minDens = this.myGui.localMinDensity;
+		maxDens = this.myGui.localMaxDensity;
+		this.drums.evolveLastFill(minDens, maxDens);
+	}
 
+	drum_basicFill { |unitLength, numReps|
+		var minDens, maxDens;
+		minDens = this.myGui.localMinDensity;
+		maxDens = this.myGui.localMaxDensity;
+		this.drums.setCurrentPattern(this.drums.generatePattern(unitLength,numReps,minDensity: minDens, maxDensity: maxDens));
+	}
 
 }
 /*
