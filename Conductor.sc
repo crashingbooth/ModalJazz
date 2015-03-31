@@ -202,7 +202,7 @@ Conductor {
 	}
 
 	drum_basicFill { |unitLength, numReps, minDens = 0, maxDens = 0.5|
-		this.drums.setCurrentPattern(this.drums.generatePattern(unitLength,numReps,minKickDensity: minDens, maxKickDensity: maxDens));
+		this.drums.setCurrentPattern(this.drums.generatePattern(unitLength,numReps,minDensity: minDens, maxDensity: maxDens));
 	}
 
 	drum_polymetricFill { |numBars, unit|

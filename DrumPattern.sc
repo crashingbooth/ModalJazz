@@ -295,18 +295,18 @@ DrumPlayer {
 
 	}
 
-	generatePattern { |phraseLength = 6, reps = 2, minKickDensity = 0, maxKickDensity = 1|
+	generatePattern { |phraseLength = 6, reps = 2, minDensity = 0, maxDensity = 1|
 		// ride will play quarters, make phrase of length phraseLength and repeat reps times
 		// reps will be mutated (either from most recent rep or 1st rep)
-		var initialArray = [], repsArr = [], accent1 = phraseLength.rand, accent2 = phraseLength.rand, outList, kickRate, kicks,minKickFlag = false, maxKickFlag = false;
+		var initialArray = [], repsArr = [], accent1 = phraseLength.rand, accent2 = phraseLength.rand, outList, density, kicks,minDensityFlag = false, maxDensityFlag = false;
 		var count = 0, outName = "";
 		outName = "customFill " ++ phraseLength ++ " x " ++ reps;
-		while ({(minKickFlag == false) || (maxKickFlag == false)},
+		while ({(minDensityFlag == false) || (maxDensityFlag == false)},
 
 			{   // generate initial pattern w/ accents
 				initialArray = [];
-				minKickFlag = false;
-				maxKickFlag = false;
+				minDensityFlag = false;
+				maxDensityFlag = false;
 				phraseLength.do { |i|
 					var acc = \n;
 					if ( (i == accent1) || (i == accent2), { acc = \s } );
@@ -320,12 +320,12 @@ DrumPlayer {
 					initArr.do {
 					|pair| if (pair[0] == "kick", {kicks = kicks +1;}) };
 				};
-				kickRate = (kicks/(reps*phraseLength));
+				density = (kicks/(reps*phraseLength));
 
-				if (minKickDensity <= kickRate, {minKickFlag = true});
-				if (maxKickDensity >= kickRate, {maxKickFlag = true});
+				if (minDensity <= density, {minDensityFlag = true});
+				if (maxDensity >= density, {maxDensityFlag = true});
 				count = count +1;
-				if (count > 50, {minKickFlag = true; maxKickFlag = true; "couldn't meet kick ratio".postln});
+				if (count > 50, {minDensityFlag = true; maxDensityFlag = true; "couldn't meet kick ratio".postln});
 
 
 
