@@ -165,9 +165,9 @@ ModalJazzGUI {
 		var w = 100, changeView, fill1View, fill2View, fill3View;
 		var fill1List, fill2List, fill3List;
 		this.drumView.decorator_(FlowLayout(this.drumView.bounds, this.m@this.m,this.m@this.m));
-		this.drumCurrentPatternLabel = StaticText(this.drumView, 200@this.h);
+		this.drumCurrentPatternLabel = StaticText(this.drumView, 250@this.h);
 
-		this.drumLastPatternLabel = StaticText(this.drumView, 200@this.h);
+		this.drumLastPatternLabel = StaticText(this.drumView, 250@this.h);
 
 		this.drumView.decorator.nextLine;
 		this.drumModeView = HLayoutView(this.drumView, Rect(5,5,310,this.h));
@@ -213,7 +213,7 @@ ModalJazzGUI {
 		this.drum_fillDensitySlider = RangeSlider(this.drumView, 550@this.h)
 		.lo_(this.localMinDensity)
 		.hi_(this.localMaxDensity)
-		.action_({|sl| this.localMinDensity = sl.lo; this.localMaxDensity = sl.hi; [this.localMinDensity,this.localMaxDensity].postln});
+		.action_({|sl| this.localMinDensity = sl.lo; this.localMaxDensity = sl.hi; });
 
 
 

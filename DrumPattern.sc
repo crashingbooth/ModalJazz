@@ -298,10 +298,10 @@ DrumPlayer {
 	generatePattern { |phraseLength = 6, reps = 2, minDensity = 0, maxDensity = 1|
 		// ride will play quarters, make phrase of length phraseLength and repeat reps times
 		// reps will be mutated (either from most recent rep or 1st rep)
-		var initialArray = [], repsArr = [], accent1 = phraseLength.rand, accent2 = phraseLength.rand, outList, density, totalPower, densityFlag = false;
-		var count = 0, outName = "";
+		var initialArray = [], repsArr = [], accent1 = phraseLength.rand, accent2 = phraseLength.rand, outList, density, totalPower, distance = [], bestDensity;
+		var count = 0, outName = "", bestSoFar, minValue;
 		outName = "customFill " ++ phraseLength ++ " x " ++ reps;
-		while ({densityFlag == false},
+		while ({distance[0] != 0},
 
 			{   // generate initial pattern w/ accents
 				initialArray = [];
@@ -314,9 +314,11 @@ DrumPlayer {
 				repsArr = this.createVariations(phraseLength, reps, initialArray);
 
 				// density calculation
-				densityFlag = this.densityCalculation(repsArr, minDensity, maxDensity);
+				distance = this.densityCalculation(repsArr, minDensity, maxDensity);
+				if (minValue.isNil, {minValue = distance[0]; bestSoFar = repsArr},
+					{ if (minValue > distance[0], {minValue = distance[0]; bestSoFar = repsArr; bestDensity = distance[1]})});
 				count = count +1;
-				if (count > 50, {densityFlag = true;"couldn't meet density requirements".postln});
+				if (count > 50, {distance[0] = 0; repsArr = bestSoFar; "couldn't meet density requirements".postln});
 
 
 
@@ -325,13 +327,13 @@ DrumPlayer {
 		// flatten repsArr
 		this.mostRecentFill = repsArr;
 		this.mostRecentFillName = outName;
-		repsArr.do {  |phrase| outList = outList ++ phrase	};
+		bestSoFar.do {  |phrase| outList = outList ++ phrase	};
 
-		^DrumPlayer.monoListToPattern(outList, name: outName, hitsPerBar:(phraseLength * reps));
+		^DrumPlayer.monoListToPattern(outList, name: (this.mostRecentFillName++ " " ++ bestDensity.asStringPrec(3)), hitsPerBar:(phraseLength * reps));
 	}
 
 	densityCalculation { |repsArr, minDensity, maxDensity|
-		var totalPower, density;
+		var totalPower, density, distance = 0;
 		totalPower = 0;
 		repsArr.do { |initArr|
 			initArr.do { |pair|
@@ -348,7 +350,11 @@ DrumPlayer {
 		density = (totalPower/(repsArr.size*repsArr[0].size));
 		["densityCalc", density, minDensity, maxDensity].postln;
 
-		^((minDensity <= density) && (maxDensity >= density))
+		if ((minDensity <= density), {}, {distance = distance + (minDensity - density)});
+		if ((maxDensity >= density), {}, {distance = distance + (density - maxDensity)});
+
+		^[distance, density];
+
 	}
 
 	createVariations {|phraseLength, reps, source|
@@ -372,7 +378,7 @@ DrumPlayer {
 	}
 	evolveLastFill { |minDensity = 0, maxDensity = 0.5|
 		// takes most recent output of generatePattern, evolves from 1st or last pattern
-		var source, reps, repsArr, phraseLength, outList, name, densityFlag = false, count = 0;
+		var source, reps, repsArr, phraseLength, outList, name, distance = [], count = 0, minValue, bestSoFar, bestDensity;
 
 		// in case there is no fill already, make one
 		if (this.mostRecentFill == nil, {this.setCurrentPattern(this.generatePattern(3,4,0,0.3)) } ,{
@@ -380,13 +386,17 @@ DrumPlayer {
 		source = [this.mostRecentFill[0], this.mostRecentFill[this.mostRecentFill.size-1]].choose;
 		reps = this.mostRecentFill.size;
 		phraseLength = source.size;
-			while ({densityFlag  == false },
+			while ({distance[0]  != 0 },
 				{
-					repsArr = this.createVariations(phraseLength, reps, source);
-					densityFlag = this.densityCalculation(repsArr, minDensity, maxDensity);
-					count = count +1;
-				if (count > 50, {densityFlag = true;"couldn't meet density requirements".postln});
 
+					repsArr = this.createVariations(phraseLength, reps, source);
+
+					distance = this.densityCalculation(repsArr, minDensity, maxDensity);
+					if (minValue == nil, {minValue = distance[0]; bestSoFar = repsArr.shallowCopy; bestDensity = distance[1]},
+						{ if (minValue > distance[0], {minValue = distance[0]; bestSoFar = repsArr.shallowCopy;bestDensity = distance[1]})});
+					count = count +1;
+
+					if (count > 50, {distance[0] = 0; "couldn't meet density requirements".postln;});
 
 			});
 
@@ -394,10 +404,10 @@ DrumPlayer {
 		outList = [];
 		// flatten repsArr
 		this.mostRecentFill = repsArr;
-		repsArr.do {  |phrase| outList = outList ++ phrase	};
+		bestSoFar.do {  |phrase| outList = outList ++ phrase	};
 		this.mostRecentFillName = this.mostRecentFillName ++"e";
 
-		this.setCurrentPattern(DrumPlayer.monoListToPattern(outList, name: this.mostRecentFillName, hitsPerBar:(phraseLength * reps))); })
+			this.setCurrentPattern(DrumPlayer.monoListToPattern(outList, name: (this.mostRecentFillName ++ " " ++ bestDensity.asStringPrec(3)), hitsPerBar:(phraseLength * reps))); })
 
 	}
 

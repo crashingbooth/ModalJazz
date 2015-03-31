@@ -197,7 +197,7 @@ Conductor {
 		this.drums.restoreLastPattern()
 	}
 
-	drum_evolve {
+	drum_evolve { |minDens = 0, maxDens = 0.5|
 		this.drums.evolveLastFill();
 	}
 
